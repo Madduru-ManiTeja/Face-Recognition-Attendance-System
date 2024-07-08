@@ -27,14 +27,17 @@ def findEncodings(images):
     return encodeList
 
 def markAttendance(name):
-    with open('Attendance.csv', 'r+') as f:
+    with open('Attendance.csv', 'a+') as f:
+        # Move the file pointer to the beginning to read existing data
+        f.seek(0)
         myDataList = f.readlines()
         nameList = [line.split(',')[0] for line in myDataList]
         if name not in nameList:
             now = datetime.now()
-            dtString = now.strftime('%H:%M:%S')
-            print("Marking attendance for:", name)
-            f.writelines(f'\n{name},{dtString}')
+            date_string = now.strftime('%Y-%m-%d')
+            time_string = now.strftime('%H:%M:%S')
+            f.write(f'\n{name},{date_string},{time_string}')
+            print(f'Marking attendance for {name} on {date_string} at {time_string}')
 
 # Encode training images
 encodeListKnown = findEncodings(images)
@@ -68,7 +71,7 @@ while True:
             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.rectangle(img, (x1, y2 - 35), (x2, y2), (0, 255, 0), cv2.FILLED)
             cv2.putText(img, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
-            print(name)
+            #print(name)
             markAttendance(name)
 
     cv2.imshow('Webcam', img)
